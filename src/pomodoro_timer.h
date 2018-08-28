@@ -9,9 +9,9 @@
 #include <QSystemTrayIcon>
 #include <QWidget>
 
-class PomodorTimer {
+class PomodoroTimer {
 public:
-	PomodorTimer();
+	PomodoroTimer();
 	void start();
 	void stop();
 	void toggle();

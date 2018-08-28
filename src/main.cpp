@@ -2,13 +2,13 @@
 
 #include <iostream>
 
-#include "pomodor_timer.h"
+#include "pomodoro_timer.h"
 
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 
-	PomodorTimer pt;
+	PomodoroTimer pt;
 
 	return a.exec();
 }

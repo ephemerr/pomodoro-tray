@@ -23,14 +23,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        main.cpp \
-    pomodor_timer.cpp
+        src/main.cpp \
+    src/pomodoro_timer.cpp
 
 RESOURCES += \
     resources.qrc
 
 HEADERS += \
-    pomodor_timer.h
+    src/pomodoro_timer.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

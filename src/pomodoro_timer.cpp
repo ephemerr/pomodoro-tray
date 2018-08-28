@@ -1,6 +1,6 @@
-#include "pomodor_timer.h"
+#include "pomodoro_timer.h"
 
-PomodorTimer::PomodorTimer() {
+PomodoroTimer::PomodoroTimer() {
 	menu.addAction(&startstop);
 	menu.addSeparator();
 	menu.addAction(&quitaction);
@@ -14,7 +14,7 @@ PomodorTimer::PomodorTimer() {
 	sti.showMessage("TEST", "Hello World");
 }
 
-void PomodorTimer::toggle() {
+void PomodoroTimer::toggle() {
 	if(running) {
 		sti.setIcon(icon_paused);
 	} else {
