@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/tomato.png</file>
+        <file>resources/tomato_pause.png</file>
+    </qresource>
+</RCC>
