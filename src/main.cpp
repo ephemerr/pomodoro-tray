@@ -1,7 +1,5 @@
 #include <QApplication>
 
-#include <iostream>
-
 #include "pomodoro_timer.h"
 
 int main(int argc, char *argv[])
