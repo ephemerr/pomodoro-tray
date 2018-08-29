@@ -21,13 +21,13 @@ public:
 	void toggle();
 
 private:
-	int pomodoro_time{1500}; //in seconds. 1500 = 25minutes
-	int pomodoro_pause{300}; //in seconds. 300 = 5minutes
-	int pomodoro_big_pause{1200}; //in seconds. 1200 = 20minutes
+	int pomodoro_time{1500 * 1000}; //in ms. 1500s = 25minutes
+	int pomodoro_pause{300 * 1000}; //in ms. 300s = 5minutes
+	int pomodoro_big_pause{1200 * 1000}; //in ms. 1200s = 20minutes
 	int pomodoros{3}; //pomodoros until bigger pause
 	int pomodoro_cntr{0}; //current pomodoro intervall counter
 
-	int timer_remaining;
+	int timer_remaining{pomodoro_time}; //init with default pomodoro_time
 
 	bool running{false};
 
@@ -39,7 +39,7 @@ private:
 
 	QSystemTrayIcon sti;
 
-	QTimer timer;
+	QTimer timer, update_timer;
 
 	//show somewhere
 	//designed by Freepik from Flaticon
