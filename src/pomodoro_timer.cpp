@@ -59,7 +59,7 @@ PomodoroTimer::PomodoroTimer() {
 		auto secstr = (sec < 10) ? '0' + QString::number(sec) : QString::number(sec);
 
 		//update text
-		actions["timer"].setText(QString::number(min) + ":" + secstr);
+		actions["timer"].setText(QString::number(min) + ":" + secstr + "  [" + QString::number(pomodoro_cntr + 1) + "/" + QString::number(pomodoros) + "]");
 
 		update_timer.start(1000);
 	});
