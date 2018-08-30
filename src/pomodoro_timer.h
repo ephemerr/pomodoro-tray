@@ -21,6 +21,7 @@ public:
 	void toggle();
 
 private:
+	enum STATE{NORMAL, PAUSE, BREAK} state{NORMAL};
 	int pomodoro_time{1500 * 1000}; //in ms. 1500s = 25minutes
 	int pomodoro_pause{300 * 1000}; //in ms. 300s = 5minutes
 	int pomodoro_big_pause{1200 * 1000}; //in ms. 1200s = 20minutes

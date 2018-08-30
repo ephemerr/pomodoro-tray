@@ -26,14 +26,27 @@ PomodoroTimer::PomodoroTimer() {
 	QObject::connect(&actions["startstop"], &QAction::triggered, [=](){this->toggle();}); //"Toggle Start/Stop"
 	QObject::connect(&actions["restartcurr"], &QAction::triggered, [=](){this->timer.start();}); //"Restart current Pomodoro"
 	QObject::connect(&actions["exit"], &QAction::triggered, [=](){QApplication::quit();}); //"Exit"
-
-//	QObject::connect(&sti, &QSystemTrayIcon::activated, [=](QSystemTrayIcon::ActivationReason reason){
-//		actions["timer"].setText(std::to_string(timer.remainingTime()).c_str());
-//	});
+	//QObject::connect(&actions["skip"], &QAction::triggered, [=](){timer.start(1000);}); //"Skip"
 
 	QObject::connect(&timer, &QTimer::timeout, [=](){
-		this->sti.showMessage("Timeout", "*ring* *ring*");
-		timer.start(pomodoro_time);
+		if(state == STATE::NORMAL) {
+			++pomodoro_cntr;
+			if(pomodoro_cntr >= pomodoros) {
+				this->sti.showMessage("Timeout", "make a break now!");
+				state = STATE::BREAK;
+				timer.start(pomodoro_big_pause);
+				pomodoro_cntr = 0;
+			} else {
+				this->sti.showMessage("Timeout", "make a small pause now!");
+				state = STATE::PAUSE;
+				timer.start(pomodoro_pause);
+			}
+		} else if(state == STATE::PAUSE || state == STATE::BREAK) {
+			state = STATE::NORMAL;
+			timer.start(pomodoro_time);
+		} else {
+			this->sti.showMessage("ERROR", "Unknown state found!", QSystemTrayIcon::MessageIcon::Critical);
+		}
 	});
 
 	QObject::connect(&update_timer, &QTimer::timeout, [=](){
@@ -51,12 +64,21 @@ PomodoroTimer::PomodoroTimer() {
 		update_timer.start(1000);
 	});
 
+	QObject::connect(&sti, &QSystemTrayIcon::activated, [=](QSystemTrayIcon::ActivationReason reason){
+		switch (reason) {
+		case QSystemTrayIcon::Trigger:
+			this->sti.showMessage("W", "look at me");
+			break;
+		default:
+			break;
+		}
+	});
+
 	sti.setContextMenu(&menu);
 	sti.setIcon(icon_paused);
 	sti.show();
-	//sti.showMessage("TEST", "Hello World");
 
-	update_timer.start(1000);
+	update_timer.start(1000); //update timer displayed in menu every second
 }
 
 void PomodoroTimer::toggle() {
