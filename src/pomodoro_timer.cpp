@@ -3,6 +3,10 @@
 #include <QDebug>
 #include <QString>
 
+#include <QWidgetAction>
+
+#include <QSpinBox>
+
 PomodoroTimer::PomodoroTimer() {
 	actions["startstop"].setText("Toggle Start/Stop");
 	actions["restartcurr"].setText("Restart current Pomodoro");
@@ -13,35 +17,69 @@ PomodoroTimer::PomodoroTimer() {
 	actions["timer"].setDisabled(true);
 	actions["exit"].setText("Exit");
 
-	menu.addAction(&actions["startstop"]);
-	menu.addAction(&actions["restartcurr"]);
-	//menu.addAction(&actions["skip"]); //TODO
-	//menu.addAction(&actions["restart"]); //TODO
-	//menu.addAction(&actions["extend"]); //TODO
-	menu.addSeparator();
-	menu.addAction(&actions["timer"]);
-	menu.addSeparator();
-	menu.addAction(&actions["exit"]);
+	//SliderAction requires qstring at construction
+	//resulting in a deleted default ctor and deleted copy ctor
+	//thus we need to forward the args
+	wdgtactions.emplace(std::piecewise_construct,
+						std::forward_as_tuple("pomodoro_time"),
+						std::forward_as_tuple("Pomodoro Time", pomodoro_time/1000 / 60));
 
-	QObject::connect(&actions["startstop"], &QAction::triggered, [=](){this->toggle();}); //"Toggle Start/Stop"
-	QObject::connect(&actions["restartcurr"], &QAction::triggered, [=](){this->timer.start();}); //"Restart current Pomodoro"
-	QObject::connect(&actions["exit"], &QAction::triggered, [=](){QApplication::quit();}); //"Exit"
-	//QObject::connect(&actions["skip"], &QAction::triggered, [=](){timer.start(1000);}); //"Skip"
+	wdgtactions.emplace(std::piecewise_construct,
+						std::forward_as_tuple("pomodoro_pause"),
+						std::forward_as_tuple("Pomodoro Pause", pomodoro_pause/1000 / 60));
 
+	wdgtactions.emplace(std::piecewise_construct,
+						std::forward_as_tuple("pomodoro_big_pause"),
+						std::forward_as_tuple("Pomodoro Break", pomodoro_big_pause/1000 / 60));
+
+	wdgtactions.emplace(std::piecewise_construct,
+						std::forward_as_tuple("pomodoros"),
+						std::forward_as_tuple("Pomodoros", pomodoros, ""));
+
+	wdgtactions.at("pomodoro_time").slider()->setMaximum(60);
+	wdgtactions.at("pomodoro_pause").slider()->setMaximum(60);
+	wdgtactions.at("pomodoro_big_pause").slider()->setMaximum(2*60);
+	wdgtactions.at("pomodoros").slider()->setMaximum(10);
+	wdgtactions.at("pomodoros").slider()->setMaximumWidth(100);
+
+	//create menu
+	menu.addSeparator();
+	menu.addAction(&actions.at("startstop"));
+	menu.addAction(&actions.at("restartcurr"));
+	//menu.addAction(&actions.at("skip")); //TODO
+	//menu.addAction(&actions.at("restart")); //TODO
+	//menu.addAction(&actions.at("extend")); //TODO
+	menu.addSeparator();
+	menu.addAction(&actions.at("timer"));
+	menu.addSeparator();
+	menu.addAction(&wdgtactions.at("pomodoro_time"));
+	menu.addAction(&wdgtactions.at("pomodoro_pause"));
+	menu.addAction(&wdgtactions.at("pomodoro_big_pause"));
+	menu.addAction(&wdgtactions.at("pomodoros"));
+	menu.addSeparator();
+	menu.addAction(&actions.at("exit"));
+
+	QObject::connect(&actions.at("startstop"), &QAction::triggered, [=](){this->toggle();}); //"Toggle Start/Stop"
+	QObject::connect(&actions.at("restartcurr"), &QAction::triggered, [=](){this->timer.start();}); //"Restart current Pomodoro"
+	QObject::connect(&actions.at("exit"), &QAction::triggered, [=](){QApplication::quit();}); //"Exit"
+	//QObject::connect(&actions.at("skip"), &QAction::triggered, [=](){timer.start(1000);}); //"Skip"
+
+	//pomodoro timer logic
 	QObject::connect(&timer, &QTimer::timeout, [=](){
 		if(state == STATE::NORMAL) {
 			++pomodoro_cntr;
 			if(pomodoro_cntr >= pomodoros) {
-				this->sti.showMessage("Timeout", "make a break now!");
+				this->sti.showMessage("Big Break!", "make a break now!");
 				state = STATE::BREAK;
 				timer.start(pomodoro_big_pause);
 				pomodoro_cntr = 0;
 			} else {
-				this->sti.showMessage("Timeout", "make a small pause now!");
+				this->sti.showMessage("Small Pause", "make a small pause now!");
 				state = STATE::PAUSE;
 				timer.start(pomodoro_pause);
 			}
 		} else if(state == STATE::PAUSE || state == STATE::BREAK) {
+			this->sti.showMessage("BACK", "back to work!");
 			state = STATE::NORMAL;
 			timer.start(pomodoro_time);
 		} else {
@@ -49,6 +87,7 @@ PomodoroTimer::PomodoroTimer() {
 		}
 	});
 
+	//update timer to show remaining time in menu
 	QObject::connect(&update_timer, &QTimer::timeout, [=](){
 		int rt = running ? timer.remainingTime() : timer_remaining;
 
@@ -64,14 +103,30 @@ PomodoroTimer::PomodoroTimer() {
 		update_timer.start(1000);
 	});
 
+	//left click
 	QObject::connect(&sti, &QSystemTrayIcon::activated, [=](QSystemTrayIcon::ActivationReason reason){
 		switch (reason) {
 		case QSystemTrayIcon::Trigger:
-			this->sti.showMessage("W", "look at me");
+			//this->settings.show();
 			break;
 		default:
 			break;
 		}
+	});
+
+	//slider signals
+	QObject::connect(wdgtactions.at("pomodoro_time").slider(), &QSlider::valueChanged, [=](int newvalue){
+		pomodoro_time = newvalue * 60 * 1000;
+		timer_remaining = pomodoro_time;
+	});
+	QObject::connect(wdgtactions.at("pomodoro_pause").slider(), &QSlider::valueChanged, [=](int newvalue){
+		pomodoro_pause = newvalue * 60 * 1000;
+	});
+	QObject::connect(wdgtactions.at("pomodoro_big_pause").slider(), &QSlider::valueChanged, [=](int newvalue){
+		pomodoro_big_pause = newvalue * 60 * 1000;
+	});
+	QObject::connect(wdgtactions.at("pomodoros").slider(), &QSlider::valueChanged, [=](int newvalue){
+		pomodoros = newvalue;
 	});
 
 	sti.setContextMenu(&menu);

@@ -24,13 +24,15 @@ CONFIG += c++11
 
 SOURCES += \
         src/main.cpp \
-    src/pomodoro_timer.cpp
+    src/pomodoro_timer.cpp \
+    src/settings_widget.cpp
 
 RESOURCES += \
     resources.qrc
 
 HEADERS += \
-    src/pomodoro_timer.h
+    src/pomodoro_timer.h \
+    src/settings_widget.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

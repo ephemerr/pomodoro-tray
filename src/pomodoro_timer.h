@@ -13,8 +13,67 @@
 #include <map>
 #include <string>
 
+#include <QWidgetAction>
+#include <QLabel>
+
+
+#include "settings_widget.h"
+
+
+class SliderAction : public QWidgetAction {
+public:
+	SliderAction(const QString& title, int default_value, QString postfix = " min") : QWidgetAction(nullptr) {
+		this->postfix = postfix;
+		QWidget* pWidget = new QWidget(nullptr);
+		QHBoxLayout* pLayout = new QHBoxLayout();
+
+		pLabel = new QLabel("     " + title);
+
+		pSlider = new QSlider(Qt::Horizontal, nullptr);
+		pSlider->setMinimum(1);
+		pSlider->setMaximum(1000);
+		pSlider->setValue(default_value);
+		pSlider->setSliderPosition(default_value);
+
+		pLabelSlider = new QLabel(QString::number(this->pSlider->value()) + postfix);
+
+		pLayout->addWidget(pLabel);
+		pLayout->addWidget(pSlider);
+		pLayout->addWidget(pLabelSlider);
+
+		pWidget->setLayout(pLayout);
+
+		setDefaultWidget(pWidget);
+
+		QObject::connect(pSlider, &QSlider::valueChanged, [=](){
+			this->pLabelSlider->setText(QString::number(this->pSlider->value()) + postfix);
+		});
+	}
+
+	QSlider * slider() {
+		return pSlider;
+	}
+
+	const QSlider * slider() const {
+		return pSlider;
+	}
+
+	void setLabel(const QString& text) {
+		if(pLabel != nullptr) {
+			pLabel->setText(text);
+		}
+	}
+
+private:
+	QSlider * pSlider;
+	QLabel * pLabel;
+	QLabel * pLabelSlider;
+	QString postfix;
+};
+
 class PomodoroTimer {
 public:
+
 	PomodoroTimer();
 	void start();
 	void stop();
@@ -33,9 +92,8 @@ private:
 	bool running{false};
 
 	std::map<std::string, QAction> actions;
+	std::map<std::string, SliderAction> wdgtactions;
 
-	//QAction startstop{"Toggle Start/Stop"};
-	//QAction quitaction{"Exit"};
 	QMenu menu;
 
 	QSystemTrayIcon sti;
