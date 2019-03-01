@@ -16,8 +16,8 @@ class PomodoroState;
 class PomodoroTimer {
 public:
 
-	PomodoroTimer();
-	void toggle();
+  PomodoroTimer();
+  void toggle();
   void update();
   int showMessage(QString,QString,int level=0);
   State selectNextState();
@@ -25,11 +25,11 @@ public:
   void setState(const PomodoroState &);
   void setState(State);
 
-	int pomodoros{3}; //pomodoros until bigger rest
-	int pomodoro_cntr{0}; //current pomodoro intervall counter
+  int pomodoros{3}; //pomodoros until bigger rest
+  int pomodoro_cntr{0}; //current pomodoro intervall counter
 
-	QSystemTrayIcon tray_;
-	QTimer timer, update_timer;
+  QSystemTrayIcon tray_;
+  QTimer timer, update_timer;
 
   State state_;
 };
@@ -38,7 +38,7 @@ class PomodoroState {
   public:
   PomodoroState(State state,QString msg,QString icon_address,int minutes) :
     state_(state), msg_(msg), icon_address_(icon_address), minutes_(minutes) {};
-	State state_{STOPPED};
+  State state_{STOPPED};
   QString msg_;
   QString icon_address_;
   int minutes_;

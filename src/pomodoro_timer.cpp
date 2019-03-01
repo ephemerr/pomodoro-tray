@@ -12,26 +12,26 @@ PomodoroState state_data[] = {
 
 PomodoroTimer::PomodoroTimer() {
   qDebug() << "PomodoroTimer" ;
-	//pomodoro timer logic
+  //pomodoro timer logic
   timer.setSingleShot(true);
-	QObject::connect(&timer, &QTimer::timeout, [=]() {
+  QObject::connect(&timer, &QTimer::timeout, [=]() {
     auto next = this->selectNextState();
     askToNextState(next);
-	});
+  });
 
-	//update timer to show remaining time
-	QObject::connect(&update_timer, &QTimer::timeout, [=] { this->update(); });
+  //update timer to show remaining time
+  QObject::connect(&update_timer, &QTimer::timeout, [=] { this->update(); });
   update_timer.setInterval(1000);
-	update_timer.start();
+  update_timer.start();
 
   setState(State::STOPPED);
 
-	//left click
-	QObject::connect(&tray_,
+  //left click
+  QObject::connect(&tray_,
   &QSystemTrayIcon::activated, [=] (QSystemTrayIcon::ActivationReason reason) {
-		if (reason == QSystemTrayIcon::DoubleClick) toggle();
-	});
-	tray_.show();
+    if (reason == QSystemTrayIcon::DoubleClick) toggle();
+  });
+  tray_.show();
 }
 
 void PomodoroTimer::update() {
