@@ -4,10 +4,10 @@
 #include <QString>
 
 PomodoroState state_data[] = {
-    PomodoroState(State::WORK,     "work",     ":/resources/red.png",    25)
-  , PomodoroState(State::REST,     "rest",     ":/resources/green.png",  5)
-  , PomodoroState(State::BIG_REST, "big rest", ":/resources/yellow.png", 20)
-  , PomodoroState(State::STOPPED,  "",                           ":/resources/grey.png", 0)
+    PomodoroState(State::WORK,    "work",  ":/resources/red.png",    25)
+  , PomodoroState(State::BREAK,   "break", ":/resources/green.png",  5)
+  , PomodoroState(State::REST,    "rest",  ":/resources/yellow.png", 20)
+  , PomodoroState(State::STOPPED, "",      ":/resources/grey.png",   0)
 };
 
 PomodoroTimer::PomodoroTimer() {
@@ -59,8 +59,8 @@ void PomodoroTimer::toggle() {
 
 int PomodoroTimer::showMessage(QString title, QString msg, int) {
   QMessageBox msgBox;
-  msgBox.setText(title);
-  msgBox.setInformativeText(msg);
+  msgBox.setText(msg);
+  // msgBox.setInformativeText(msg);
   msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
   msgBox.setDefaultButton(QMessageBox::Ok);
   int ret = msgBox.exec();
@@ -71,11 +71,11 @@ State PomodoroTimer::selectNextState() {
   State res = State::STOPPED;
   if(state_ == State::WORK) {
     if(pomodoro_cntr >= pomodoros) {
-      res = State::BIG_REST;
-    } else {
       res = State::REST;
+    } else {
+      res = State::BREAK;
     }
-  } else if(state_ == State::REST || state_ == State::BIG_REST) {
+  } else if(state_ == State::BREAK || state_ == State::REST) {
       res = State::WORK;
   } else {
     showMessage("ERROR", "Unknown state found!");
@@ -92,7 +92,7 @@ void PomodoroTimer::setState(const PomodoroState &to) {
   state_ = to.state_;
   tray_.setIcon(QIcon(to.icon_address_));
   if (state_ != State::STOPPED) {
-    timer.start(to.minutes_*100);
+    timer.start(to.minutes_*60*1000);
   }
 }
 
@@ -100,11 +100,11 @@ void PomodoroTimer::askToNextState(State to_indx) {
   PomodoroState &to = state_data[to_indx];
   if (to_indx == State::STOPPED)
     goto FIN;
-  if (to_indx == State::REST)
+  if (to_indx == State::BREAK)
     ++pomodoro_cntr;
-  if (to_indx == State::BIG_REST)
+  if (to_indx == State::REST)
     pomodoro_cntr = 0;
-  if (PomodoroTimer::showMessage("Pomodoro",to.msg_) != QMessageBox::Ok)
+  if (PomodoroTimer::showMessage("","Pomodoro calls to "+to.msg_) != QMessageBox::Ok)
     to = state_data[State::STOPPED];
 FIN:
   qDebug() << __func__ << to.state_;

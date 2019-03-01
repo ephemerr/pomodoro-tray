@@ -9,7 +9,7 @@
 #include <QSystemTrayIcon>
 #include <QTimer>
 
-enum State{WORK=0, REST, BIG_REST, STOPPED};
+enum State{WORK=0, BREAK, REST, STOPPED};
 
 class PomodoroState;
 
