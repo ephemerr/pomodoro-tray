@@ -44,9 +44,10 @@ void PomodoroTimer::update() {
   tray_.setToolTip(time_str);
 }
 
-int PomodoroTimer::showMessage(QString, QString msg, int) {
+int PomodoroTimer::showMessage(QString, QString , int) {
   TaskBox msgBox;
-  // msgBox.setText(msg);
+  TaskData data = {{"Work",99}};
+  msgBox.populate(data);
   // msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
   // msgBox.setDefaultButton(QMessageBox::Ok);
   // QSpacerItem* horizontalSpacer = new QSpacerItem(500, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);

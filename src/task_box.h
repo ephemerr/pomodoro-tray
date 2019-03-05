@@ -7,12 +7,15 @@ namespace Ui {
 class TaskBox;
 }
 
+typedef QList<QPair<QString,int>> TaskData;
+
 class TaskBox : public QDialog
 {
     Q_OBJECT
 
 public:
     explicit TaskBox(QWidget *parent = nullptr);
+    void populate(const TaskData&);
     ~TaskBox();
 
 private:
