@@ -37,13 +37,11 @@ PomodoroTimer::PomodoroTimer() {
 }
 
 void PomodoroTimer::update() {
-  int rt = timer.isActive() ? timer.remainingTime() : 0;
+  int rt = timer.remainingTime();
   int min = rt / 1000 / 60;
-  int sec = rt / 1000  - min*60;
-  //prepend '0' for single digit seconds (< 10) to have nice format (mm:ss)
-  auto secstr = (sec < 10) ? '0' + QString::number(sec) : QString::number(sec);
-  //update text
-  auto time_str = QString("%1:%2").arg(min).arg(secstr);
+  int sec = rt / 1000 - min*60;
+  auto zero = (sec < 10) ? "0" : "";
+  auto time_str = QString("%1:%2%3").arg(min).arg(zero).arg(sec);
   tray_.setToolTip(time_str);
 }
 
