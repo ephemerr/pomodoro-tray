@@ -69,13 +69,10 @@ State PomodoroTimer::selectNextState() {
   return res;
 }
 
-void PomodoroTimer::setState(State to_indx) {
-  setState(state_data[to_indx]);
-}
-
-void PomodoroTimer::setState(const PomodoroState &to) {
+void PomodoroTimer::setState(State state) {
+  auto to = state_data[state];
   qDebug() << __func__ <<  to.state_ << to.icon_address_;
-  state_ = to.state_;
+  state_ = state;
   tray_.setIcon(QIcon(to.icon_address_));
   if (state_ != State::STOPPED) {
     timer.start(to.minutes_*60*1000);
@@ -84,12 +81,12 @@ void PomodoroTimer::setState(const PomodoroState &to) {
   }
 }
 
-void PomodoroTimer::askToNextState(State to_indx) {
-  auto msg = state_data[to_indx].msg_;
-  if (to_indx != State::STOPPED) {
+void PomodoroTimer::askToNextState(State state) {
+  auto msg = state_data[state].msg_;
+  if (state != State::STOPPED) {
     if (PomodoroTimer::showMessage("","Pomodoro calls to " + msg) != QDialog::Accepted)
-      to_indx = State::STOPPED;
+      state = State::STOPPED;
   }
-  qDebug() << __func__ << to_indx;
-  setState(state_data[to_indx]);
+  qDebug() << __func__ << state;
+  setState(state);
 }

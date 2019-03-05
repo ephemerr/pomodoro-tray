@@ -21,11 +21,7 @@ public:
   int showMessage(QString,QString,int level=0);
   State selectNextState();
   void askToNextState(State );
-  void setState(const PomodoroState &);
   void setState(State);
-
-  int pomodoros{3}; //pomodoros until bigger rest
-  int pomodoro_cntr{0}; //current pomodoro intervall counter
 
   QSystemTrayIcon tray_;
   QTimer timer, update_timer;
