@@ -3,11 +3,11 @@
 
 #include <QAction>
 #include <QApplication>
-#include <QMessageBox>
 #include <QIcon>
 #include <QObject>
 #include <QSystemTrayIcon>
 #include <QTimer>
+#include <QtWidgets>
 
 enum State{WORK=0, BREAK, REST, STOPPED};
 
@@ -17,7 +17,6 @@ class PomodoroTimer {
 public:
 
   PomodoroTimer();
-  void toggle();
   void update();
   int showMessage(QString,QString,int level=0);
   State selectNextState();
