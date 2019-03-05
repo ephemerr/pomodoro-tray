@@ -27,7 +27,6 @@ CONFIG += c++11
 SOURCES += \
         src/main.cpp \
     src/pomodoro_timer.cpp\
-    src/task_box.cpp \
     src/task_box.cpp
 
 RESOURCES += \
@@ -35,7 +34,6 @@ RESOURCES += \
 
 HEADERS += \
     src/pomodoro_timer.h\
-    src/task_box.h \
     src/task_box.h
 
 run.commands = ./pomodoro-t

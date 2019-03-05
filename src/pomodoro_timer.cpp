@@ -46,9 +46,9 @@ void PomodoroTimer::update() {
 
 int PomodoroTimer::showMessage(QString, QString msg, int) {
   TaskBox msgBox;
-  msgBox.setText(msg);
-  msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-  msgBox.setDefaultButton(QMessageBox::Ok);
+  // msgBox.setText(msg);
+  // msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+  // msgBox.setDefaultButton(QMessageBox::Ok);
   // QSpacerItem* horizontalSpacer = new QSpacerItem(500, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
   // QGridLayout* layout = (QGridLayout*)msgBox.layout();
   // layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
@@ -74,7 +74,7 @@ void PomodoroTimer::setState(State to_indx) {
 }
 
 void PomodoroTimer::setState(const PomodoroState &to) {
-  qDebug() << __func__ <<  to.state_;
+  qDebug() << __func__ <<  to.state_ << to.icon_address_;
   state_ = to.state_;
   tray_.setIcon(QIcon(to.icon_address_));
   if (state_ != State::STOPPED) {
@@ -85,14 +85,11 @@ void PomodoroTimer::setState(const PomodoroState &to) {
 }
 
 void PomodoroTimer::askToNextState(State to_indx) {
-  PomodoroState &to = state_data[to_indx];
-  if (to_indx == State::STOPPED)
-    goto FIN;
-  if (to_indx == State::BREAK)
-    ++pomodoro_cntr;
-  if (PomodoroTimer::showMessage("","Pomodoro calls to "+to.msg_) != QMessageBox::Ok)
-    to = state_data[State::STOPPED];
-FIN:
-  qDebug() << __func__ << to.state_;
-  setState(to);
+  auto msg = state_data[to_indx].msg_;
+  if (to_indx != State::STOPPED) {
+    if (PomodoroTimer::showMessage("","Pomodoro calls to " + msg) != QDialog::Accepted)
+      to_indx = State::STOPPED;
+  }
+  qDebug() << __func__ << to_indx;
+  setState(state_data[to_indx]);
 }

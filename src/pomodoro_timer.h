@@ -9,7 +9,7 @@
 #include <QTimer>
 #include <QtWidgets>
 
-enum State{WORK=0, BREAK, REST, STOPPED};
+enum State{WORK=0, BREAK, STOPPED};
 
 class PomodoroState;
 
