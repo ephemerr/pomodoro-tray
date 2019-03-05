@@ -1,4 +1,5 @@
 #include "pomodoro_timer.h"
+#include "task_box.h"
 
 #include <QDebug>
 #include <QString>
@@ -23,8 +24,6 @@ PomodoroTimer::PomodoroTimer() {
   update_timer.setInterval(1000);
   update_timer.start();
 
-  setState(State::STOPPED);
-
   //left click
   QObject::connect(&tray_,
   &QSystemTrayIcon::activated, [=] (QSystemTrayIcon::ActivationReason reason) {
@@ -32,8 +31,8 @@ PomodoroTimer::PomodoroTimer() {
       askToNextState(timer.isActive() ? State::STOPPED : State::WORK);
     }
   });
-  tray_.show();
   askToNextState(State::WORK);
+  tray_.show();
 }
 
 void PomodoroTimer::update() {
@@ -46,14 +45,13 @@ void PomodoroTimer::update() {
 }
 
 int PomodoroTimer::showMessage(QString, QString msg, int) {
-  QMessageBox msgBox;
+  TaskBox msgBox;
   msgBox.setText(msg);
   msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
   msgBox.setDefaultButton(QMessageBox::Ok);
-  QSpacerItem* horizontalSpacer = new QSpacerItem(300, 400, QSizePolicy::Minimum, QSizePolicy::Expanding);
-  QGridLayout* layout = (QGridLayout*)msgBox.layout();
-  layout->addItem(horizontalSpacer, 1, 0, 1, layout->columnCount());
-  QTableWidget task_table(1,3,&msgBox);
+  // QSpacerItem* horizontalSpacer = new QSpacerItem(500, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+  // QGridLayout* layout = (QGridLayout*)msgBox.layout();
+  // layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
 
   int ret = msgBox.exec();
   return ret;
