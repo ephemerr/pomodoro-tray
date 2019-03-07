@@ -46,7 +46,10 @@ void PomodoroTimer::update() {
 
 int PomodoroTimer::showMessage(QString, QString , int) {
   TaskBox msgBox;
-  TaskData data = {{"Work",99}};
+  TaskData data = {
+     {"Work",99}
+    ,{"SuperWork",101}
+  };
   msgBox.populate(data);
   // msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
   // msgBox.setDefaultButton(QMessageBox::Ok);

@@ -1,7 +1,8 @@
 #ifndef TASK_BOX_H
 #define TASK_BOX_H
 
-#include <QDialog>
+#include <QtWidgets>
+#include <QtCore>
 
 namespace Ui {
 class TaskBox;
@@ -16,6 +17,7 @@ class TaskBox : public QDialog
 public:
     explicit TaskBox(QWidget *parent = nullptr);
     void populate(const TaskData&);
+    void keyPressEvent(QKeyEvent *event);
     ~TaskBox();
 
 private:
