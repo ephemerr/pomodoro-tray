@@ -2,18 +2,29 @@
 #include "ui_task_box.h"
 #include <QDebug>
 
+TaskItem::TaskItem(QString text, int pomodoras)
+  : QListWidgetItem(QIcon(":/resources/red.png"),text)
+    ,pomodoras_(pomodoras)
+{}
+
+QVariant TaskItem::data(int role) const {
+  if (role == Qt::DisplayRole) {
+    return QString("x%1 %2")
+      .arg(pomodoras_)
+      .arg(QListWidgetItem::data(role).toString());
+  } else return QListWidgetItem::data(role);
+}
+
 TaskBox::TaskBox(QWidget *parent) :
     QDialog(parent), ui(new Ui::TaskBox)
 {
     ui->setupUi(this);
-    ui->tableWidget->setColumnWidth(0,200);
-    ui->tableWidget->setColumnWidth(1,70);
-    ui->tableWidget->setColumnWidth(2,30);
 }
 
 void TaskBox::keyPressEvent(QKeyEvent *event) {
+    auto taskWidget = ui->listWidget;
     if(event->key() == Qt::Key_Delete) {
-      auto selected = ui->tableWidget->selectedItems();
+      auto selected = taskWidget->selectedItems();
         if(selected.count() > 0) {
             QMessageBox deleteRequest;
             auto task_name = selected.first()->data(Qt::DisplayRole).toString();
@@ -22,27 +33,21 @@ void TaskBox::keyPressEvent(QKeyEvent *event) {
             deleteRequest.setDefaultButton(QMessageBox::Cancel);
             auto approved = deleteRequest.exec();
             if (approved) {
-              ui->tableWidget->removeRow(selected.first()->row());
+              taskWidget->takeItem(taskWidget->currentRow());
             }
         }
     }
     QDialog::keyPressEvent(event);
 }
 
-
 void TaskBox::populate(const TaskData &data) {
   for (auto task : data) {
     qDebug() << __func__ << task.first;
-    auto row = ui->tableWidget->rowCount()-1;
-    ui->tableWidget->insertRow(row);
-    // ui->tableWidget->setItemDelegate(new TaskBoxDelegate);
-    auto *text = new QTableWidgetItem(task.first);
-    auto *pomodoras = new QTableWidgetItem();
-    pomodoras->setIcon(QIcon(":/resources/red.png"));
-    pomodoras->setText(QString("x%1").arg(task.second));
-    pomodoras->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-    ui->tableWidget->setItem(row, 0, text);
-    ui->tableWidget->setItem(row, 1, pomodoras);
+    auto taskWidget = ui->listWidget;
+    auto *item = new TaskItem(task.first, task.second);
+    item->setIcon(QIcon(":/resources/red.png"));
+    item->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+    taskWidget->addItem(item);
   }
 }
 

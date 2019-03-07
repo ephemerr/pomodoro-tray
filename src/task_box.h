@@ -10,6 +10,15 @@ class TaskBox;
 
 typedef QList<QPair<QString,int>> TaskData;
 
+
+class TaskItem : public QListWidgetItem {
+public:
+  TaskItem(QString text, int pomodoras);
+  QVariant data(int) const;
+private:
+  int pomodoras_{0};
+};
+
 class TaskBox : public QDialog
 {
     Q_OBJECT
